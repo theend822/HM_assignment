@@ -2,7 +2,7 @@ import pandas as pd
 from sqlalchemy import create_engine, text
 import os
 
-class PostgreManager:
+class PostgresManager:
     """
     Centralized database connection and operations
     

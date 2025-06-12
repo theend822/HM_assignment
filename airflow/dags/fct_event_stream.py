@@ -7,7 +7,7 @@ from dag_util.ingest_data import ingest_data
 from dag_util.execute_sql import execute_sql
 from dag_util.run_dq_check import run_dq_check
 from dag_util.create_table import create_table
-from dq_check.stg_event_stream import dq_checks
+from dq_check.stg_event_stream import DQ_CHECKS
 
 default_args = {
     "owner": "airflow",
@@ -51,7 +51,7 @@ with DAG (
     )
 
     dq_tasks = []
-    for check_type, check_content in dq_checks.items():
+    for check_type, check_content in DQ_CHECKS.items():
         for col_name, sql_query in check_content.items():
             f"dq_task_{check_type}_{col_name}" = PythonOperator(
                 task_id=f"dq_check_{check_type}_{col_name}",

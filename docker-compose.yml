@@ -86,8 +86,7 @@ services:
     restart: always
 
   dbt:
-    build: dbt/
-    image: pl_dbt
+    image: dbt-labs/dbt-postgres:1.9.latest
     depends_on:
       postgres:
         condition: service_healthy
@@ -102,10 +101,11 @@ services:
       POSTGRES_HOST: ${POSTGRES_HOST}
       POSTGRES_PORT: ${POSTGRES_PORT}
       TZ: UTC
+    command: ["tail", "-f", "/dev/null"]
     restart: "no" # dbt should only run when triggered by Airflow
 
   visualization:
-    build: visualization/
+    image: metabase/metabase:latest
     depends_on:
       postgres:
         condition: service_healthy
