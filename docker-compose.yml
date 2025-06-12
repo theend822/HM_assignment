@@ -19,7 +19,7 @@ services:
       timeout: 5s
 
   airflow-init:
-    image: apache/airflow:2.10.5
+    image: apache/airflow:2.10.5 # seems like airflow 2.x is more stable compared to 3.x where strange errors may occur
     entrypoint: /bin/bash
     command: -c "airflow db migrate && airflow users create --username admin --firstname Admin --lastname User --role Admin --email admin@admin.com --password admin"
     volumes:
@@ -29,8 +29,8 @@ services:
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__API_AUTH__JWT_SECRET: this_is_a_secret_key
-      AIRFLOW__CORE__LOAD_EXAMPLES: False
-      AIRFLOW__CORE__DEFAULT_TIMEZONE: UTC
+      AIRFLOW__CORE__LOAD_EXAMPLES: False # Disable loading example DAGs; User 'admin' will be created via command
+      AIRFLOW__CORE__DEFAULT_TIMEZONE: UTC # Adding this environment variable to avoid ts native vs ts aware issue
       AIRFLOW__WEBSERVER__DEFAULT_UI_TIMEZONE: UTC
       TZ: UTC
     depends_on:
@@ -62,7 +62,7 @@ services:
         AIRFLOW__CORE__DEFAULT_TIMEZONE: UTC
         AIRFLOW__WEBSERVER__DEFAULT_UI_TIMEZONE: UTC
         TZ: UTC
-      command: airflow api-server
+      command: webserver
       restart: always
   
   airflow-scheduler:
@@ -84,7 +84,7 @@ services:
       AIRFLOW__CORE__DEFAULT_TIMEZONE: UTC
       AIRFLOW__WEBSERVER__DEFAULT_UI_TIMEZONE: UTC
       TZ: UTC
-    command: airflow scheduler
+    command: scheduler
     restart: always
 
   dbt:

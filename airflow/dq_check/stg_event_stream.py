@@ -7,7 +7,7 @@ event_type = [
     "like",
 ]
 
-transcation_category = [
+transaction_category = [
     "dining",
     "ecommerce",
     "flight",
@@ -52,7 +52,7 @@ DQ_CHECKS = {
 
     "ACCEPT_VALUE_CHECK":{
         "event_type": f"{sql_template} WHERE event_type NOT IN {tuple(event_type)}",
-        "transcation_category": f"{sql_template} WHERE event_type not in ('share','like') and transcation_category NOT IN {tuple(transcation_category)}",
+        "transaction_category": f"{sql_template} WHERE event_type not in ('share','like') and transaction_category NOT IN {tuple(transaction_category)}",
         "platform": f"{sql_template} WHERE platform NOT IN {tuple(platform)}",
         "utm_source": f"{sql_template} WHERE utm_source NOT IN {tuple(utm_source)}",
         "country": f"{sql_template} WHERE country NOT IN {tuple(country)}",
@@ -62,16 +62,16 @@ DQ_CHECKS = {
         "event_time": f"{sql_template} WHERE event_time IS NULL",
         "user_id": f"{sql_template} WHERE user_id IS NULL",
         "event_type": f"{sql_template} WHERE event_type IS NULL",
-        "transcation_category": f"{sql_template} WHERE event_type not in ('share','like') and transcation_category IS NULL",
-        "miles_amount": f"{sql_template} WHERE miles_amount IS NULL",
+        "transaction_category": f"{sql_template} WHERE event_type not in ('share','like') and transaction_category IS NULL",
+        "miles_amount": f"{sql_template} WHERE event_type not in ('share','like','reward_search') and miles_amount IS NULL",
         "platform": f"{sql_template} WHERE platform IS NULL",
         "utm_source": f"{sql_template} WHERE utm_source IS NULL",
         "country": f"{sql_template} WHERE country IS NULL",
     },
 
     "FORMAT_CHECK": {
-        "event_time": f"{sql_template} WHERE event_time !~ '^\d{4}-\d{2}-\d{2} \d{1,2}:\d{2}:\d{2}$'",
-        "user_id": f"{sql_template} WHERE user_id !~ '^u_\d{4}$'",
+        "event_time": f"{sql_template} WHERE event_time !~ '^\\d{{4}}-\\d{{2}}-\\d{{2}} \\d{{2}}:\\d{{2}}:\\d{{2}}\\.\\d{{6}}$'",
+        "user_id": f"{sql_template} WHERE user_id !~ '^u_\\d{{4}}$'",
     },
    
 }

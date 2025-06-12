@@ -5,7 +5,7 @@ CREATE TABLE fct_event_stream (
     user_id VARCHAR(50),
     event_type VARCHAR(255),
     transaction_category VARCHAR(50),
-    miles_amount INTEGER,
+    miles_amount DECIMAL(10,2),
     platform VARCHAR(50),
     utm_source VARCHAR(50),
     country VARCHAR(10)

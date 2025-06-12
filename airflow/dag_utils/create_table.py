@@ -1,4 +1,4 @@
-from dag_utils import PostgresManager
+from dag_utils.PostgresManager import PostgresManager
 
 def create_table(table_schema, log_message):
     """

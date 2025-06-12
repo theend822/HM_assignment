@@ -24,17 +24,15 @@ class PostgresManager:
         
         Returns: SQLAlchemy result object (for potential debugging/inspection)
         """
-        with self.engine.connect() as conn:
-            result = conn.execute(text(sql_query))
-            conn.commit()
+        with self.engine.begin() as conn:
+            conn.execute(text(sql_query))
             print(log_message)
-            return result
     
     def ingest_csv(self, file_path, table_name, if_exists='replace'):
         """
         Load CSV data into PostgreSQL table
         """
-        df = pd.read_csv(file_path, dtype=str)  # Load as string for staging
+        df = pd.read_csv(file_path, dtype=str)
 
         df.to_sql(
             table_name, 
@@ -50,8 +48,7 @@ class PostgresManager:
         Run SQL DQ check with error handling
         """
         try:
-            result = self.execute_sql(sql_query, f"DQ Check PASSED: {check_name}")
-            return True
+            self.execute_sql(sql_query, f"DQ Check PASSED: {check_name}")
         except Exception as e:
             print(f"DQ Check FAILED: {check_name} - {str(e)}")
             raise e

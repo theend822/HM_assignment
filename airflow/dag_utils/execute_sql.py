@@ -1,4 +1,4 @@
-from dag_utils import PostgresManager
+from dag_utils.PostgresManager import PostgresManager
 
 def execute_sql(sql_query, log_message="SQL executed successfully"):
     pg = PostgresManager()

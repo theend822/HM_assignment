@@ -19,8 +19,7 @@ The pipeline consists of the following steps:
 """
 
 with DAG (
-    "hm_datamart",
-    owner="admin",
+    "fct_event_stream",
     start_date=datetime(2025, 6, 1, tzinfo=timezone.utc),
     schedule_interval=None,
     catchup=False,
@@ -80,7 +79,7 @@ with DAG (
                     user_id,
                     event_type,
                     transaction_category,
-                    miles_amount::INTEGER,
+                    miles_amount::DECIMAL(10,2),
                     platform,
                     utm_source,
                     country
