@@ -1,4 +1,4 @@
-FROM apache/airflow:2.10.5-python3.12
+FROM apache/airflow:latest
 # temporary switch to root user to install applications
 USER root 
 

@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 metabase/metabase:latest
+FROM metabase/metabase:latest
 
 WORKDIR /opt/visulazation/metabase
 
