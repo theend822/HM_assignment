@@ -1,12 +1,10 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-from airflow.providers.postgres.operators.postgres import PostgresOperator
-from airflow.operators.bash import BashOperator
 from datetime import datetime, timezone
-from dag_util.ingest_data import ingest_data
-from dag_util.execute_sql import execute_sql
-from dag_util.run_dq_check import run_dq_check
-from dag_util.create_table import create_table
+from dag_utils.ingest_data import ingest_data
+from dag_utils.execute_sql import execute_sql
+from dag_utils.run_dq_check import run_dq_check
+from dag_utils.create_table import create_table
 from dq_check.stg_event_stream import DQ_CHECKS
 
 default_args = {
@@ -76,7 +74,7 @@ with DAG (
         task_id="load_fct",
         python_callable=execute_sql,
         op_kwargs={
-            "sql_file":"/opt/airflow/sql/fct_event_stream.sql",
+            "sql_query":"SELECT",
             "log_message":"Successfully loaded fct_event_stream table",
         },
     )

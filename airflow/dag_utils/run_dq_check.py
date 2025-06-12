@@ -1,4 +1,4 @@
-from dag_util import PostgresManager
+from dag_utils import PostgresManager
 
 def dq_check_task(check_name, sql_query):
     pg = PostgresManager()

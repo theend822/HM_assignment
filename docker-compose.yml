@@ -19,16 +19,16 @@ services:
       timeout: 5s
 
   airflow-init:
-    image: apache/airflow:2.10.5
+    image: apache/airflow:latest
     entrypoint: /bin/bash
-    command: -c "airflow db init"
+    command: -c "airflow db migrate && airflow users create --username admin --firstname Admin --lastname User --role Admin --email admin@admin.com --password admin"
     volumes:
       - ./airflow:/opt/airflow
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__CORE__LOAD_EXAMPLES: True
+      AIRFLOW__API_AUTH__JWT_SECRET: this_is_a_secret_key
       AIRFLOW__CORE__DEFAULT_TIMEZONE: UTC
       AIRFLOW__WEBSERVER__DEFAULT_UI_TIMEZONE: UTC
       TZ: UTC
@@ -46,13 +46,14 @@ services:
         - "8080:8080"
       volumes:
         - ./airflow:/opt/airflow
-        - .HM_Assignment/raw_data:/opt/raw_data
+        - ./HM_Assignment/raw_data:/opt/raw_data
         - ./dbt:/opt/dbt
         - ./visualization:/opt/visualization
         - /var/run/docker.sock:/var/run/docker.sock
       environment:
         AIRFLOW__CORE__EXECUTOR: LocalExecutor
         AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}
+        AIRFLOW__API_AUTH__JWT_SECRET: this_is_a_secret_key
         POSTGRES_USER: ${POSTGRES_USER}
         POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
         POSTGRES_DB: ${POSTGRES_DB}
@@ -61,7 +62,7 @@ services:
         AIRFLOW__CORE__DEFAULT_TIMEZONE: UTC
         AIRFLOW__WEBSERVER__DEFAULT_UI_TIMEZONE: UTC
         TZ: UTC
-      command: webserver
+      command: airflow api-server
       restart: always
   
   airflow-scheduler:
@@ -79,14 +80,15 @@ services:
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      AIRFLOW__API_AUTH__JWT_SECRET: this_is_a_secret_key
       AIRFLOW__CORE__DEFAULT_TIMEZONE: UTC
       AIRFLOW__WEBSERVER__DEFAULT_UI_TIMEZONE: UTC
       TZ: UTC
-    command: scheduler
+    command: airflow scheduler
     restart: always
 
   dbt:
-    image: dbt-labs/dbt-postgres:1.9.latest
+    image: ghcr.io/dbt-labs/dbt-postgres:1.9.latest@sha256:a705312b55af0ebdd149977914c28502a382d74dca8fe51fff368371a61cc8a7
     depends_on:
       postgres:
         condition: service_healthy
