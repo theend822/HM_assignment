@@ -52,14 +52,14 @@ DQ_CHECKS = {
 
     "ACCEPT_VALUE_CHECK":{
         "event_type": f"{sql_template} WHERE event_type NOT IN {tuple(event_type)}",
-        "transcation_category": f"{sql_template} WHERE event_type not in ('share','like') and transcation_category NOT IN {tuple(event_type)}",
-        "platform": f"{sql_template} WHERE platform NOT IN {tuple(event_type)}",
-        "utm_source": f"{sql_template} WHERE utm_source NOT IN {tuple(event_type)}",
+        "transcation_category": f"{sql_template} WHERE event_type not in ('share','like') and transcation_category NOT IN {tuple(transcation_category)}",
+        "platform": f"{sql_template} WHERE platform NOT IN {tuple(platform)}",
+        "utm_source": f"{sql_template} WHERE utm_source NOT IN {tuple(utm_source)}",
         "country": f"{sql_template} WHERE country NOT IN {tuple(country)}",
     },
 
     "NULL_CHECK": {
-        "event_timestamp": f"{sql_template} WHERE event_timestamp IS NULL",
+        "event_time": f"{sql_template} WHERE event_time IS NULL",
         "user_id": f"{sql_template} WHERE user_id IS NULL",
         "event_type": f"{sql_template} WHERE event_type IS NULL",
         "transcation_category": f"{sql_template} WHERE event_type not in ('share','like') and transcation_category IS NULL",
@@ -70,7 +70,7 @@ DQ_CHECKS = {
     },
 
     "FORMAT_CHECK": {
-        "event_timestamp": f"{sql_template} WHERE event_timestamp !~ '^\d{4}-\d{2}-\d{2} \d{1,2}:\d{2}:\d{2}$'",
+        "event_time": f"{sql_template} WHERE event_time !~ '^\d{4}-\d{2}-\d{2} \d{1,2}:\d{2}:\d{2}$'",
         "user_id": f"{sql_template} WHERE user_id !~ '^u_\d{4}$'",
     },
    

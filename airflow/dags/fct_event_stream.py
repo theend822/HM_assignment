@@ -1,5 +1,5 @@
 from airflow import DAG
-from airflow.operators.python_operator import PythonOperator
+from airflow.operators.python import PythonOperator
 from datetime import datetime, timezone
 from dag_utils.ingest_data import ingest_data
 from dag_utils.execute_sql import execute_sql
@@ -70,7 +70,22 @@ with DAG (
         task_id="load_fct",
         python_callable=execute_sql,
         op_kwargs={
-            "sql_query":"SELECT * FROM stg_event_stream",
+            "sql_query":"""
+                INSERT INTO fct_event_stream (
+                    event_time, user_id, event_type, transaction_category, 
+                    miles_amount, platform, utm_source, country
+                )
+                SELECT 
+                    event_time::TIMESTAMP,
+                    user_id,
+                    event_type,
+                    transaction_category,
+                    miles_amount::INTEGER,
+                    platform,
+                    utm_source,
+                    country
+                FROM stg_event_stream
+            """,
             "log_message":"Successfully loaded fct_event_stream table",
         },
     )

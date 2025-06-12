@@ -46,7 +46,7 @@ services:
         - "8080:8080"
       volumes:
         - ./airflow:/opt/airflow
-        - ./HM_Assignment/raw_data:/opt/raw_data
+        - ./HM_Assignment/raw_data:/opt/airflow/raw_data
         - ./dbt:/opt/dbt
         - ./visualization:/opt/visualization
         - /var/run/docker.sock:/var/run/docker.sock
