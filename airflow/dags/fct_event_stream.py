@@ -1,16 +1,11 @@
 from airflow import DAG
-from airflow.operators.python import PythonOperator
+from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timezone
 from dag_utils.ingest_data import ingest_data
 from dag_utils.execute_sql import execute_sql
 from dag_utils.run_dq_check import run_dq_check
 from dag_utils.create_table import create_table
 from dq_check.stg_event_stream import DQ_CHECKS
-
-default_args = {
-    "owner": "airflow",
-    "start_date": datetime(2025, 6, 12, tzinfo=timezone.utc),
-}
 
 """
 This pipeline is responsible for ingesting raw data from a CSV file into a stage table in Postgres, after peforming necessary transformations and data quality checks, publishing the fct table. Data modeling will be carried out using dbt in later stage. 
@@ -25,7 +20,8 @@ The pipeline consists of the following steps:
 
 with DAG (
     "hm_datamart",
-    default_args=default_args,
+    owner="admin",
+    start_date=datetime(2025, 6, 1, tzinfo=timezone.utc),
     schedule_interval=None,
     catchup=False,
 ) as dag: 
@@ -40,7 +36,7 @@ with DAG (
     )
 
     load_stg = PythonOperator(
-        task_id="ingest_data",
+        task_id="load_stg",
         python_callable=ingest_data,
         op_kwargs={
             "file_path":"/opt/airflow/raw_data/event_stream.csv", 
@@ -51,7 +47,7 @@ with DAG (
     dq_tasks = []
     for check_type, check_content in DQ_CHECKS.items():
         for col_name, sql_query in check_content.items():
-            f"dq_task_{check_type}_{col_name}" = PythonOperator(
+            dq_task = PythonOperator(
                 task_id=f"dq_check_{check_type}_{col_name}",
                 python_callable=run_dq_check,
                 op_kwargs={
@@ -59,7 +55,7 @@ with DAG (
                     "sql_query": sql_query,
                 },
             )
-            dq_tasks.append(f"dq_task_{check_type}_{col_name}")
+            dq_tasks.append(dq_task)
 
     create_fct_table = PythonOperator(
         task_id='create_fct_table',
@@ -74,7 +70,7 @@ with DAG (
         task_id="load_fct",
         python_callable=execute_sql,
         op_kwargs={
-            "sql_query":"SELECT",
+            "sql_query":"SELECT * FROM stg_event_stream",
             "log_message":"Successfully loaded fct_event_stream table",
         },
     )
